@@ -64,7 +64,7 @@ fn main() {
             dir_enemy = Direction::Up;
         }
 
-        if now.elapsed().as_millis() >= 110 {
+        if now.elapsed().as_millis() >= 10 {
             if check_for_collision(&paddle, &ball.sprite) {
                 if dir == Direction::Up {
                     ball.vel_y += 1;
@@ -85,20 +85,22 @@ fn main() {
                 ball.vel_x *= -1;
                 ball.vel_y *= -1;
             }
-            if y_ball == 0 || y_ball == 500
+            if y_ball < 0 || y_ball > 500
             {
                 
                 ball.vel_y *= -1;
             }
-            if x_ball == 0 || x_ball == 500
+            if x_ball < 0 || x_ball > 500
             { 
                 ball.sprite.set_position((250,250));
-                ball.vel_x *= -1;
+                ball.vel_x = ball.vel_x * -1 - 1;
+                ball.vel_y = ball.vel_y * -1 - 1;
+
             }
 
             ball.sprite.translate((ball.vel_x, ball.vel_y));
         }
-        if now.elapsed().as_millis() >= 120 {
+        if now.elapsed().as_millis() >= 10 {
             if (y_enemy - CORNER) < 0 {
                 dir_enemy = Direction::Still;
                 paddle_enemy.set_position((x_enemy, 1 + CORNER));
@@ -109,15 +111,15 @@ fn main() {
 
             match dir_enemy {
                 Direction::Up => {
-                    paddle_enemy.translate((0, 25));
+                    paddle_enemy.translate((0, 2));
                 }
                 Direction::Down => {
-                    paddle_enemy.translate((0, -25));
+                    paddle_enemy.translate((0, -2));
                 }
                 _ => (),
             };
         }
-        if now.elapsed().as_millis() >= 120 {
+        if now.elapsed().as_millis() >= 10 {
             if (y_player - CORNER) < 0 {
                 dir = Direction::Still;
                 paddle.set_position((x_player, 1 + CORNER));
@@ -128,10 +130,10 @@ fn main() {
             if held {
                 match dir {
                     Direction::Up => {
-                        paddle.translate((0, 25));
+                        paddle.translate((0, 2));
                     }
                     Direction::Down => {
-                        paddle.translate((0, -25));
+                        paddle.translate((0, -2));
                     }
                     _ => (),
                 };
