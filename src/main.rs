@@ -27,13 +27,17 @@ fn main() {
     let mut dir_enemy = Direction::Still;
 
     let mut now = Instant::now();
+    
+    // FPS COUNTER
+    let mut now2 = Instant::now();
+    let mut counter = 0;
     game.run(|ctx| {
         ctx.set_background_colour(0, 0, 0);
 
         let (x_player, y_player) = paddle.position().into();
         let (x_enemy, y_enemy) = paddle_enemy.position().into();
 
-        let (_, y_ball) = ball.sprite.position().into();
+        let (x_ball, y_ball) = ball.sprite.position().into();
 
         let keys = get_keyboard_state(ctx).keys;
         for key in &keys {
@@ -60,34 +64,39 @@ fn main() {
             dir_enemy = Direction::Up;
         }
 
-        if now.elapsed().as_millis() >= 90 {
+        if now.elapsed().as_millis() >= 110 {
             if check_for_collision(&paddle, &ball.sprite) {
                 if dir == Direction::Up {
-                    ball.vol_y += 1;
+                    ball.vel_y += 1;
                 }
                 if dir == Direction::Down {
-                    ball.vol_y -= 1;
+                    ball.vel_y -= 1;
                 }
-                ball.vol_x *= -1;
-                ball.vol_y *= -1;
+                ball.vel_x *= -1;
+                ball.vel_y *= -1;
             }
             if check_for_collision(&paddle_enemy, &ball.sprite) {
                 if dir_enemy == Direction::Up {
-                    ball.vol_y += 1;
+                    ball.vel_y += 1;
                 }
                 if dir_enemy == Direction::Down {
-                    ball.vol_y -= 1;
+                    ball.vel_y -= 1;
                 }
-                ball.vol_x *= -1;
-                ball.vol_y *= -1;
+                ball.vel_x *= -1;
+                ball.vel_y *= -1;
             }
             if y_ball == 0 || y_ball == 500
             {
                 
-                ball.vol_y *= -1;
+                ball.vel_y *= -1;
+            }
+            if x_ball == 0 || x_ball == 500
+            { 
+                ball.sprite.set_position((250,250));
+                ball.vel_x *= -1;
             }
 
-            ball.sprite.translate((ball.vol_x, ball.vol_y));
+            ball.sprite.translate((ball.vel_x, ball.vel_y));
         }
         if now.elapsed().as_millis() >= 120 {
             if (y_enemy - CORNER) < 0 {
@@ -129,11 +138,19 @@ fn main() {
             } 
             now = Instant::now();
         }
-        
+        // FPS COUNTER STUFF
+        if now2.elapsed().as_millis() >= 1000
+        {
+            println!("{counter}");
+            counter = 0;
+            now2 = Instant::now();
+        }
+        counter += 1;
 
         ball.sprite.draw(ctx).unwrap();
         paddle.draw(ctx).unwrap();
         paddle_enemy.draw(ctx).unwrap();
+        
     })
     .unwrap();
 }
