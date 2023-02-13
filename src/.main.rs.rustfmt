@@ -27,7 +27,7 @@ fn main() {
     let mut dir_enemy = Direction::Still;
 
     let mut now = Instant::now();
-
+    
     game.run(|ctx| {
         ctx.set_background_colour(0, 0, 0);
 
@@ -64,25 +64,39 @@ fn main() {
         if now.elapsed().as_millis() >= 10 {
             //BALL
             if check_for_collision(&paddle, &ball.sprite) {
-                ball.vel_y += (ball.vel_y * 1);
+                if dir == Direction::Up {
+                    ball.vel_y += 1;
+                }
+                if dir == Direction::Down {
+                    ball.vel_y += 1;
+                }
                 ball.vel_x *= -1;
                 ball.vel_y *= -1;
             }
             if check_for_collision(&paddle_enemy, &ball.sprite) {
-                ball.vel_y += (ball.vel_y * 1);
+                if dir_enemy == Direction::Up {
+                    ball.vel_y += 1;
+                }
+                if dir_enemy == Direction::Down {
+                    ball.vel_y -= 1;
+                }
                 ball.vel_x *= -1;
                 ball.vel_y *= -1;
             }
-            if y_ball < 0 || y_ball > 500 {
+            if y_ball < 0 || y_ball > 500
+            {
+                
                 ball.vel_y *= -1;
             }
-            if x_ball < 0 || x_ball > 500 {
-                ball.sprite.set_position((250, 250));
+            if x_ball < 0 || x_ball > 500
+            { 
+                ball.sprite.set_position((250,250));
                 ball::Ball::rand_angle(&mut ball);
+
             }
 
             ball.sprite.translate((ball.vel_x, ball.vel_y));
-
+            
             //ENEMY LOGIC
             if (y_enemy - CORNER) < 0 {
                 dir_enemy = Direction::Still;
@@ -101,7 +115,7 @@ fn main() {
                 }
                 _ => (),
             };
-
+            
             //PLAYEW LOGIC
             if (y_player - CORNER) < 0 {
                 dir = Direction::Still;
@@ -120,13 +134,15 @@ fn main() {
                     }
                     _ => (),
                 };
-            }
+            } 
             now = Instant::now();
         }
+        
 
         ball.sprite.draw(ctx).unwrap();
         paddle.draw(ctx).unwrap();
         paddle_enemy.draw(ctx).unwrap();
+        
     })
     .unwrap();
 }
