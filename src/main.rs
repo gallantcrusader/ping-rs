@@ -22,7 +22,6 @@ fn main() {
     let mut paddle = Sprite::from_bytes(paddle_bytes, 37, 250 - CORNER).unwrap();
     let mut paddle_enemy = Sprite::from_bytes(paddle_bytes, 500 - 37, 250 - CORNER).unwrap();
 
-    let mut held = true;
 
     let mut dir = Direction::Still;
     let mut dir_enemy = Direction::Still;
@@ -51,16 +50,14 @@ fn main() {
                 match key {
                     Scancode::W | Scancode::Up => {
                         dir = Direction::Up;
-                        held = true;
                     }
                     Scancode::S | Scancode::Down => {
                         dir = Direction::Down;
-                        held = true;
                     }
-                    _ => {
-                        dir = Direction::Still;
-                        held = false;
+                    Scancode::Q | Scancode::Escape => {
+                        game.terminate();
                     }
+                    _ => ()
                 }; 
                 
             }
@@ -75,7 +72,8 @@ fn main() {
 
         if now.elapsed().as_millis() >= 10 {
             //BALL
-            if check_for_collision(&paddle, &ball.sprite) && x_ball == 50{
+            if check_for_collision(&paddle, &ball.sprite) && (x_ball <= 50 && x_ball >= 37)
+            {
                 if ball.vel_y < i32::MAX - 1
                 {
                     ball.vel_y += ball.vel_y * 1;
@@ -83,7 +81,7 @@ fn main() {
                     ball.vel_y *= -1;
                 }
             }
-            if check_for_collision(&paddle_enemy, &ball.sprite) && x_ball == 449 {
+            if check_for_collision(&paddle_enemy, &ball.sprite) && (x_ball >= 449 && x_ball <= 469) {
                 if ball.vel_y < i32::MAX - 1
                 {
                     ball.vel_y += ball.vel_y * 1;
@@ -126,6 +124,9 @@ fn main() {
                 }
                 _ => (),
             };
+            dir_enemy = Direction::Still;
+
+
 
             //PLAYEW LOGIC
             if (y_player - CORNER) < 0 {
@@ -135,17 +136,18 @@ fn main() {
                 dir = Direction::Still;
                 paddle.set_position((x_player, 500 - CORNER));
             }
-            if held {
-                match dir {
-                    Direction::Up => {
-                        paddle.translate((0, 3));
-                    }
-                    Direction::Down => {
-                        paddle.translate((0, -3));
-                    }
-                    _ => (),
-                };
-            }
+
+            match dir {
+                Direction::Up => {
+                    paddle.translate((0, 3));
+                }
+                Direction::Down => {
+                    paddle.translate((0, -3));
+                }
+                _ => (),
+            };
+            dir = Direction::Still;
+
             now = Instant::now();
         }
 
