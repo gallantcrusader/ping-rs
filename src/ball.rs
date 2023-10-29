@@ -1,5 +1,5 @@
 use cat_box::Sprite;
-use rand::{self};
+use rand;
 
 pub struct Ball {
     pub sprite: Sprite,

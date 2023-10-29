@@ -1,5 +1,7 @@
-use cat_box::{get_keyboard_state, physics::check_for_collision, Game, Sprite, draw_text, TextMode};
-use sdl2::keyboard::{Scancode/*,Keycode */};
+use cat_box::{
+    draw_text, get_keyboard_state, physics::check_for_collision, Game, Sprite, TextMode,
+};
+use sdl2::keyboard::Scancode;
 //use sdl2::event::Event;
 use std::time::Instant;
 
@@ -22,12 +24,11 @@ fn main() {
     let mut paddle = Sprite::from_bytes(paddle_bytes, 37, 250 - CORNER).unwrap();
     let mut paddle_enemy = Sprite::from_bytes(paddle_bytes, 500 - 37, 250 - CORNER).unwrap();
 
-
     let mut dir = Direction::Still;
     let mut dir_enemy = Direction::Still;
 
     let mode = TextMode::Transparent {
-        colour: (255,255,255),
+        colour: (255, 255, 255),
     };
     let mut score_player = 0;
     let mut score_enemy = 0;
@@ -36,16 +37,14 @@ fn main() {
 
     game.run(|ctx| {
         ctx.set_background_colour(0, 0, 0);
-        
+
         let (x_player, y_player) = paddle.position().into();
         let (x_enemy, y_enemy) = paddle_enemy.position().into();
 
         let (x_ball, y_ball) = ball.sprite.position().into();
-        
-        if now.elapsed().as_millis() >= 1{
-            let keys = get_keyboard_state(ctx).keys;
-            //let (_tex, _canvas, e) = ctx.inner();
 
+        if now.elapsed().as_millis() >= 1 {
+            let keys = get_keyboard_state(ctx).keys;
             for key in &keys {
                 match key {
                     Scancode::W | Scancode::Up => {
@@ -57,12 +56,11 @@ fn main() {
                     Scancode::Q | Scancode::Escape => {
                         game.terminate();
                     }
-                    _ => ()
-                }; 
-                
+                    _ => (),
+                };
             }
         }
-        
+
         if y_enemy < y_ball {
             dir_enemy = Direction::Down;
         }
@@ -72,18 +70,18 @@ fn main() {
 
         if now.elapsed().as_millis() >= 10 {
             //BALL
-            if check_for_collision(&paddle, &ball.sprite) && (x_ball <= 50 && x_ball >= 37)
-            {
-                if ball.vel_y < i32::MAX - 1
+            if check_for_collision(&paddle, &ball.sprite) 
+                && x_ball == 50 
                 {
+                if ball.vel_y < i32::MAX - 1 {
                     ball.vel_y += ball.vel_y * 1;
                     ball.vel_x *= -1;
                     ball.vel_y *= -1;
                 }
             }
-            if check_for_collision(&paddle_enemy, &ball.sprite) && (x_ball >= 449 && x_ball <= 469) {
-                if ball.vel_y < i32::MAX - 1
-                {
+            if check_for_collision(&paddle_enemy, &ball.sprite) && (x_ball >= 449 && x_ball <= 469)
+            {
+                if ball.vel_y < i32::MAX - 1 {
                     ball.vel_y += ball.vel_y * 1;
                     ball.vel_x *= -1;
                     ball.vel_y *= -1;
@@ -92,13 +90,11 @@ fn main() {
             if y_ball < 0 || y_ball > 500 {
                 ball.vel_y *= -1;
             }
-            if x_ball < 0
-            {
-                ball.sprite.set_position((250,250));
+            if x_ball < 0 {
+                ball.sprite.set_position((250, 250));
                 ball::Ball::rand_angle(&mut ball);
                 score_enemy += 1;
-            }
-            else if x_ball > 500 {
+            } else if x_ball > 500 {
                 ball.sprite.set_position((250, 250));
                 ball::Ball::rand_angle(&mut ball);
                 score_player += 1;
@@ -126,8 +122,6 @@ fn main() {
             };
             dir_enemy = Direction::Still;
 
-
-
             //PLAYEW LOGIC
             if (y_player - CORNER) < 0 {
                 dir = Direction::Still;
@@ -151,9 +145,24 @@ fn main() {
             now = Instant::now();
         }
 
-        draw_text(ctx, format!("{score_player}"), "fira.ttf", 50, (90, 100), mode).unwrap();
-        draw_text(ctx, format!("{score_enemy}"), "fira.ttf", 50, (500-90, 100), mode).unwrap();
-
+        draw_text(
+            ctx,
+            format!("{score_player}"),
+            "fira.ttf",
+            50,
+            (90, 100),
+            mode,
+        )
+        .unwrap();
+        draw_text(
+            ctx,
+            format!("{score_enemy}"),
+            "fira.ttf",
+            50,
+            (500 - 90, 100),
+            mode,
+        )
+        .unwrap();
 
         ball.sprite.draw(ctx).unwrap();
         paddle.draw(ctx).unwrap();
